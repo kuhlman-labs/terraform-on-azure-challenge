@@ -57,12 +57,13 @@ jobs:
     - name: Setup Node
       uses: actions/setup-node@v1
       with:
-        node-version: '10.15.2'
+        node-version: 10.15.2
         
     - name: npm install
-      #working-directory: Source/Tailwind.Traders.Web/ClientApp
+      working-directory: Source/Tailwind.Traders.Web/ClientApp
       run: |
         npm install
+        npm run build
 
     - name: Setup dotnet core
       uses: actions/setup-dotnet@v1
@@ -76,9 +77,9 @@ jobs:
     - name: dotnet publish
       working-directory: Source/Tailwind.Traders.Web
       run: |
-          dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/Source/Tailwind.Traders.Web
+          dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/ttweb
                    
     - uses: azure/webapps-deploy@v2
       with:
         app-name: 'tf-on-azure-challenge1-bk'
-        package: ${{env.DOTNET_ROOT}}/Source/Tailwind.Traders.Web
+        package: ${{env.DOTNET_ROOT}}/ttweb
