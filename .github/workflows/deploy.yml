@@ -60,7 +60,7 @@ jobs:
         node-version: '10.15.2'
         
     - name: npm install
-      #working-directory: Source/Tailwind.Traders.Web/ClientApp
+      working-directory: Source/Tailwind.Traders.Web/ClientApp
       run: |
         npm install
 
