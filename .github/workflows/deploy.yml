@@ -59,11 +59,9 @@ jobs:
       with:
         node-version: '10.15.2'
         
-    - name: 'npm install, build, and test'
+    - name: npm install
       run: |
         npm install
-        npm run build --if-present
-        npm run test --if-present
 
     - name: Setup dotnet core
       uses: actions/setup-dotnet@v1
