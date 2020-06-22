@@ -63,7 +63,6 @@ jobs:
       working-directory: Source/Tailwind.Traders.Web/ClientApp
       run: |
         npm install
-        npm run build
 
     - name: Setup dotnet core
       uses: actions/setup-dotnet@v1
