@@ -26,7 +26,6 @@ resource "azurerm_app_service" "challenge1" {
 
   site_config {
     dotnet_framework_version = "v4.0"
-    scm_type                 = "GitHub"
   }
 
   app_settings = {
