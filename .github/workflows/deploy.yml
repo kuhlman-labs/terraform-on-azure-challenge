@@ -41,44 +41,44 @@ jobs:
       if: github.ref == 'refs/heads/master' && github.event_name == 'push'
       run: terraform apply -auto-approve
 
-  build-and-deploy-web-app:
-    needs: Terraform
-    runs-on: ubuntu-latest
-    steps:
-    - name: 'Checkout GitHub Action' 
-      uses: actions/checkout@v2
-      with:
-        repository: kuhlman-labs/AzureEats-Website
-   
-    - uses: azure/login@v1.1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-            
-    - name: Setup Node
-      uses: actions/setup-node@v1
-      with:
-        node-version: 10.15.2
-        
-    - name: npm install
-      working-directory: Source/Tailwind.Traders.Web/ClientApp
-      run: |
-        npm install
-
-    - name: Setup dotnet core
-      uses: actions/setup-dotnet@v1
-      with:
-          dotnet-version: 2.2.103
-
-    - name: dotnet build
-      working-directory: Source/Tailwind.Traders.Web
-      run: dotnet build --configuration Release
-
-    - name: dotnet publish
-      working-directory: Source/Tailwind.Traders.Web
-      run: |
-          dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/ttweb
-                   
-    - uses: azure/webapps-deploy@v2
-      with:
-        app-name: 'tf-on-azure-challenge1-bk'
-        package: ${{env.DOTNET_ROOT}}/ttweb
+#  build-and-deploy-web-app:
+#    needs: Terraform
+#    runs-on: ubuntu-latest
+#    steps:
+#    - name: 'Checkout GitHub Action' 
+#      uses: actions/checkout@v2
+#      with:
+#        repository: kuhlman-labs/AzureEats-Website
+#   
+#    - uses: azure/login@v1.1
+#      with:
+#        creds: ${{ secrets.AZURE_CREDENTIALS }}
+#            
+#    - name: Setup Node
+#      uses: actions/setup-node@v1
+#      with:
+#        node-version: 10.15.2
+#        
+#    - name: npm install
+#      working-directory: Source/Tailwind.Traders.Web/ClientApp
+#      run: |
+#        npm install
+#
+#    - name: Setup dotnet core
+#      uses: actions/setup-dotnet@v1
+#      with:
+#          dotnet-version: 2.2.103
+#
+#    - name: dotnet build
+#      working-directory: Source/Tailwind.Traders.Web
+#      run: dotnet build --configuration Release
+#
+#    - name: dotnet publish
+#      working-directory: Source/Tailwind.Traders.Web
+#      run: |
+#          dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/ttweb
+#                   
+#    - uses: azure/webapps-deploy@v2
+#      with:
+#        app-name: 'tf-on-azure-challenge1-bk'
+#        package: ${{env.DOTNET_ROOT}}/ttweb
