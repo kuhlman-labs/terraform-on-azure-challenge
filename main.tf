@@ -107,10 +107,10 @@ resource "azurerm_resource_group" "challenge4" {
 }
 
 resource "azurerm_container_registry" "challenge4" {
-  name                     = "challenge4acrbrkuhlma"
-  resource_group_name      = azurerm_resource_group.challenge4.name
-  location                 = azurerm_resource_group.challenge4.location
-  sku                      = "Standard"
+  name                = "challenge4acrbrkuhlma"
+  resource_group_name = azurerm_resource_group.challenge4.name
+  location            = azurerm_resource_group.challenge4.location
+  sku                 = "Standard"
 }
 
 resource "azurerm_kubernetes_cluster" "challenge4" {
