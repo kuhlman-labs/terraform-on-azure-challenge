@@ -100,3 +100,32 @@ resource "null_resource" "challenge2" {
   }
 }
 */
+
+resource "azurerm_resource_group" "challenge4" {
+  name     = "challenge4-resources"
+  location = "eastus"
+}
+
+resource "azurerm_container_registry" "challenge4" {
+  name                     = "challenge4acrbrkuhlma"
+  resource_group_name      = azurerm_resource_group.challenge4.name
+  location                 = azurerm_resource_group.challenge4.location
+  sku                      = "Standard"
+}
+
+resource "azurerm_kubernetes_cluster" "challenge4" {
+  name                = "challenge4-aks1"
+  location            = azurerm_resource_group.challenge4.location
+  resource_group_name = azurerm_resource_group.challenge4.name
+  dns_prefix          = "challenge4aks1"
+
+  default_node_pool {
+    name       = "default"
+    node_count = 1
+    vm_size    = "Standard_D2_v2"
+  }
+
+  identity {
+    type = "SystemAssigned"
+  }
+}

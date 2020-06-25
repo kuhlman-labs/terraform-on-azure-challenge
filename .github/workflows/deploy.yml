@@ -81,3 +81,43 @@ jobs:
       with:
         app-name: 'tf-on-azure-challenge1-bk'
         package: ${{env.DOTNET_ROOT}}/ttweb
+  
+  aksbuildpush:
+    needs: Terraform
+    runs-on: ubuntu-16.04
+    steps:
+
+    - name: 'Checkout GitHub Action' 
+      uses: actions/checkout@v2
+      with:
+        repository: kuhlman-labs/AzureEats-Website
+    
+    - uses: azure/docker-login@v1
+      with:
+        login-server: challenge4acrbrkuhlma.azurecr.io
+        username: ${{ secrets.CLIENT_ID }}
+        password: ${{ secrets.CLIENT_SECRET }}
+        
+    - name: Docker build and push
+      working-directory: Source/Tailwind.Traders.Web
+      run: | 
+        docker build . --build-arg sdkTag=2.1 --build-arg runtimeTag=2.1 -t challenge4acrbrkuhlma.azurecr.io/web:gh-${{ github.sha }} -t latest
+        docker push challenge4acrbrkuhlma.azurecr.io/web:gh-${{ github.sha }}
+    
+    - uses: azure/login@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+      
+    - name: Set AKS kubectl context
+      uses: azure/aks-set-context@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+        cluster-name: challenge4-aks1
+        resource-group: challenge4-resources
+      
+    - name: Helm tool installer
+      uses: Azure/setup-helm@v1
+      
+    - name: Install Helm Chart
+      run: |
+        helm upgrade --install tailwindtraders-web ./Deploy/helm/web -f ./Deploy/helm/gvalues.yaml -f ./Deploy/helm/values.b2c.yaml  --set ingress.hosts={challenge4-aks1}  --set ingress.protocol=https --set ingress.tls[0].hosts={challenge4-aks1}  --set image.repository=challenge4acrbrkuhlma.azurecr.io --set image.tag=gh-${{ github.sha }}
