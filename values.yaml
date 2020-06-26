@@ -1,0 +1,6 @@
+global:
+    name: consul
+    datacenter: kuhlman-labs
+server:
+    replicas: 1
+    bootstrapExpect: 1

@@ -129,3 +129,60 @@ resource "azurerm_kubernetes_cluster" "challenge4" {
     type = "SystemAssigned"
   }
 }
+
+resource "azurerm_public_ip" "challenge5" {
+  name                = "challenge5Ip1"
+  resource_group_name = azurerm_kubernetes_cluster.challenge4.node_resource_group
+  location            = azurerm_resource_group.challenge4.location
+  allocation_method   = "Static"
+}
+
+provider "kubernetes" {
+  load_config_file       = "false"
+  host                   = azurerm_kubernetes_cluster.challenge4.kube_config.0.host
+  username               = azurerm_kubernetes_cluster.challenge4.kube_config.0.username
+  password               = azurerm_kubernetes_cluster.challenge4.kube_config.0.password
+  client_certificate     = base64decode(azurerm_kubernetes_cluster.challenge4.kube_config.0.client_certificate)
+  client_key             = base64decode(azurerm_kubernetes_cluster.challenge4.kube_config.0.client_key)
+  cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.challenge4.kube_config.0.cluster_ca_certificate)
+}
+
+resource "kubernetes_service" "challenge5" {
+  metadata {
+    name = "consul-mesh-lb"
+  }
+  spec {
+    selector = {
+      app       = "consul"
+      component = "mesh-gateway"
+    }
+    load_balancer_ip = azurerm_public_ip.challenge5.ip_address
+    session_affinity = "ClientIP"
+    port {
+      port        = 8302
+      target_port = 80
+    }
+    type = "LoadBalancer"
+  }
+}
+
+provider "helm" {
+  kubernetes {
+    load_config_file       = false
+    host                   = azurerm_kubernetes_cluster.challenge4.kube_config.0.host
+    client_certificate     = base64decode(azurerm_kubernetes_cluster.challenge4.kube_config.0.client_certificate)
+    client_key             = base64decode(azurerm_kubernetes_cluster.challenge4.kube_config.0.client_key)
+    cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.challenge4.kube_config.0.cluster_ca_certificate)
+  }
+}
+
+resource "helm_release" "challenge5" {
+  name       = "my-consul-release"
+  repository = "https://helm.releases.hashicorp.com"
+  chart      = "consul"
+
+  values = [
+    "${file("values.yaml")}",
+    "${file("consul-federation.yaml")}"
+  ]
+}
