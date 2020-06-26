@@ -4,3 +4,6 @@ global:
 server:
     replicas: 1
     bootstrapExpect: 1
+connect:
+    enabled: true
+    enable_mesh_gateway_wan_federation: true

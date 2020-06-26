@@ -157,12 +157,21 @@ resource "kubernetes_service" "challenge5" {
       component = "mesh-gateway"
     }
     load_balancer_ip = azurerm_public_ip.challenge5.ip_address
-    session_affinity = "ClientIP"
     port {
       port        = 8302
       target_port = 80
     }
     type = "LoadBalancer"
+  }
+}
+
+resource "kubernetes_secret" "example" {
+  metadata {
+    name = "consul-mesh-auth"
+  }
+
+  data = {
+    consul-federation = file("consul-federation.yaml")
   }
 }
 
@@ -182,7 +191,6 @@ resource "helm_release" "challenge5" {
   chart      = "consul"
 
   values = [
-    "${file("values.yaml")}",
-    "${file("consul-federation.yaml")}"
+    "${file("values.yaml")}"
   ]
 }
